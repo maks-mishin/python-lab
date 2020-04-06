@@ -42,7 +42,6 @@ def file_writer(all_posts):
             except: 
                 pass
             a_pen.writerow(( post['likes']['count'], post['text'], img_url ))
-            
-
+    
 all_posts = get_posts_vk()
 file_writer(all_posts)

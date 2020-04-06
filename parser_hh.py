@@ -4,6 +4,10 @@ import requests
 import csv
 from bs4 import BeautifulSoup as bs
 
+from collections import Counter
+import matplotlib.pyplot as plt
+import numpy as np
+
 headers = {'accept': '*/*',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
             }
@@ -38,6 +42,7 @@ def hh_parse(base_url, headers):
             divs = soup.find_all('div', attrs={'data-qa': 'vacancy-serp__vacancy'}) #all of divs (vacancies)
             for div in divs:
                 try:
+                    date = div.find('span', attrs={'data-qa': 'vacancy-serp__vacancy-date'}).text
                     title = div.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-title'}).text
                     href = div.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-title'})['href']
                     company = div.find('a', attrs={'data-qa': 'vacancy-serp__vacancy-employer'}).text
@@ -47,6 +52,7 @@ def hh_parse(base_url, headers):
 
                     content = text1 + ' ' + text2
                     jobs.append({
+                        'date' : date,
                         'title': title,
                         'href': href,
                         'company': company,
@@ -54,20 +60,45 @@ def hh_parse(base_url, headers):
                     })
                 except:
                     pass
-            print('Count of items in jobs: ' + str(len(jobs)))
+            #print('Count of items in jobs: ' + str(len(jobs)))
     else:
         print('Error. Status code = ' + str(request.status_code))
     print('Done. Status code = ' + str(request.status_code))
+    
     return jobs
 
 jobs = hh_parse(base_url, headers)
 
+def analisys(list_dates, dct):
+    for job in jobs:
+        list_dates.append(job['date'])
+
+    for i in list_dates:
+        if i in dct:
+            dct[i] += 1
+        else:
+            dct[i] = 1
+
+list_dates = []
+dct = {}
+analisys(list_dates, dct)
+
+size = range(len(dct.keys()))
+plt.title('Кол-во опубликованных вакансий по дням')
+ax = plt.gca()
+
+ax.bar(size, dct.values(), align='center')
+ax.set_xticks(size)
+
+ax.set_xticklabels(dct.keys())
+plt.show()
+
 def export_to_file(jobs):
     with open('parsed_jobs.csv', 'w', encoding='utf-8') as file_out: #открытие файла на добавление
         a_pen = csv.writer(file_out)
-        a_pen.writerow(('Title of vacancy', 'URL', 'Company', 'About vacancy')) #передаем tuple
+        a_pen.writerow(('Date of publication', 'Title of vacancy', 'URL', 'Company', 'About vacancy')) #передаем tuple
         for job in jobs:
-            a_pen.writerow((job['title'], job['href'], job['company'], job['content']))
+            a_pen.writerow((job['date'], job['title'], job['href'], job['company'], job['content']))
 
 
 export_to_file(jobs)
