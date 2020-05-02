@@ -12,7 +12,8 @@ headers = {'accept': '*/*',
             'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
             }
 
-base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=python'
+SEARCH_TEXT = 'python'
+base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=python' + SEARCH_TEXT
 
 #function parse
 def hh_parse(base_url, headers):
@@ -27,9 +28,9 @@ def hh_parse(base_url, headers):
         soup = bs(request.content, 'lxml') #return all content on base_url
         try:
             pagination = soup.find_all('a', attrs={'data-qa': 'pager-page'})
-            count = int(pagination[-1].text) #количество страниц доступных для парсинга 
+            count = int(pagination[-1].text) #количество страниц доступных для парсинга
             for i in range(count):
-                url = f'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=python&page={i}'
+                url = f'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=' + SEARCH_TEXT + '&page={i}'
                 if url not in urls:
                     urls.append(url) #формируем список url
         except:
@@ -64,7 +65,7 @@ def hh_parse(base_url, headers):
     else:
         print('Error. Status code = ' + str(request.status_code))
     print('Done. Status code = ' + str(request.status_code))
-    
+
     return jobs
 
 jobs = hh_parse(base_url, headers)
