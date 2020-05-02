@@ -13,7 +13,7 @@ headers = {'accept': '*/*',
             }
 
 SEARCH_TEXT = 'python'
-base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=python' + SEARCH_TEXT
+base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=' + SEARCH_TEXT
 
 #function parse
 def hh_parse(base_url, headers):
@@ -60,7 +60,16 @@ def hh_parse(base_url, headers):
                         'content': content
                     })
                 except:
+                    continue
+
+                salary = None
+                try:
+                    salary = div.find('span', attrs={'data-qa': 'vacancy-serp__vacancy-compensation'}).text
+                except:
                     pass
+
+                jobs[-1]['salary'] = salary
+
             #print('Count of items in jobs: ' + str(len(jobs)))
     else:
         print('Error. Status code = ' + str(request.status_code))
@@ -97,9 +106,9 @@ plt.show()
 def export_to_file(jobs):
     with open('parsed_jobs.csv', 'w', encoding='utf-8') as file_out: #открытие файла на добавление
         a_pen = csv.writer(file_out)
-        a_pen.writerow(('Date of publication', 'Title of vacancy', 'URL', 'Company', 'About vacancy')) #передаем tuple
+        a_pen.writerow(('Date of publication', 'Title of vacancy', 'Salary', 'URL', 'Company', 'About vacancy'))  # передаем tuple
         for job in jobs:
-            a_pen.writerow((job['date'], job['title'], job['href'], job['company'], job['content']))
-
+            a_pen.writerow((job['date'], job['title'], job['salary'],
+                            job['href'], job['company'], job['content']))
 
 export_to_file(jobs)
