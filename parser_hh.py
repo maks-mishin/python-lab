@@ -13,7 +13,7 @@ headers = {'accept': '*/*',
             }
 
 SEARCH_TEXT = 'python'
-base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=python' + SEARCH_TEXT
+base_url = 'https://hh.ru/search/vacancy?clusters=true&area=1&enable_snippets=true&search_period=3&salary=&st=searchVacancy&text=' + SEARCH_TEXT
 
 #function parse
 def hh_parse(base_url, headers):
