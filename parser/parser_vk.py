@@ -4,7 +4,7 @@ import csv
 
 # Function for parse posts from group 'tproger_web'
 def get_posts_vk():
-    token = '952810fd952810fd952810fd9e95583c8a99528952810fdcb4e05a7f76f85cad15f4067'
+    token = 'your_token'
     version = 5.103
     domain = 'tproger_web'
     count = 100
